@@ -1,0 +1,65 @@
+1.インデックス（ウィジェット）の一覧取得
+
+GET /_cat/indices?v
+
+2.インデックス（ウィジェット）内のドキュメント（記事）を全て取得
+
+GET /documents-949098165/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+3.インデックス（ウィジェット）内の特定のドキュメント（記事）を取得
+
+idが、urlのためできない。詳細はTODO
+4.キーワードで取得
+
+GET /documents-949098165//_search
+{
+  "query": {
+    "match": {
+      "snapshot.extracted.body": "人"
+    }
+  }
+}
+
+類似度クエリ
+記事と記事の類似度抽出
+
+    "_id": "saita-puls.com/voice/10164" がベースの記事
+
+GET /documents-949098165/_search
+{
+  "size": 1000,
+  "_source": [
+    "snapshot.extracted.title",
+    "snapshot.extracted.title_tokens",
+    "snapshot.extracted.body",
+    "snapshot.extracted.body_tokens"],
+  "query": {
+    "more_like_this": {
+      "fields": [
+        "snapshot.extracted.title",
+        "snapshot.extracted.body"
+      ],
+      "like": [
+        {
+          "_index": "documents-949098165",
+          "_type": "doc",
+          "_id": "saita-puls.com/voice/10164"
+        }
+      ],
+      "min_term_freq": 1,
+      "max_query_terms": 50
+    }
+  },
+  "highlight" : {
+    "type" : "fvh",
+    "fields" : {
+      "snapshot.extracted.title_tokens": {}, 
+      "snapshot.extracted.body_tokens": {}
+    }
+  }
+}
